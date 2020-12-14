@@ -1405,7 +1405,7 @@ class Ui_Sudoku_Solver(Image_Predection):
 
         super().__init__(name[0])
 
-        status = super().predictions()
+        status = super().preprocessing()
         if status == 1:
             self.status_label.setText("Unsuccessful")
             self.info_label.setText("Image could not be segmented properly")

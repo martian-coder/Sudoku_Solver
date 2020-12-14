@@ -223,7 +223,7 @@ def main():
     img_path = os.path.join(path, files[file_number-1])
 
     pred_obj = Image_Predection(img_path)
-    status = pred_obj.predictions()
+    status = pred_obj.preprocessing()
 
     if status == 1:
         print("image could not be segmented successfully")
