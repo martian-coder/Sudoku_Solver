@@ -1,8 +1,14 @@
 # Sudoku_Solver
 An Image Based Sudoku Solver, made using OpenCV and Tensorflow in Python. GUI is also available.
 
-This is a hobby project, and the code is not yet optimised, but I am happy to take any input from the community for any improvements. I will try to explain my code in this Readme file, Please feel free to scavenge any part of my code if you find it useful. 
+This is a hobby project, and the code is not yet optimised, but I am happy to take any input from the community for any improvements. I will try to explain my code in this Readme file, Please feel free to scavenge any part of my code if you find it useful. <br />
 
+I used screenshots  from
+[http://www.websudoku.com/](http://www.websudoku.com/) 
+this website to solve and also used it to make the dataset 
+<br />
+<br />
+<br />
 Libraries used
 ```
 pip install opencv-contrib-python
