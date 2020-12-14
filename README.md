@@ -50,6 +50,4 @@ python sudoku_gui.py -s [your scale factor]
 ```
 
 <br>
-![GUI](/screenshots/screenshort_1.png)
-<br>
-![foxdemo](https://github.com/foxdemo/foxdemo.github.io/blob/master/assets/images/avatar.png)
+![ScreenShot](/screenshots/screenshort_1.png)
