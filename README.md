@@ -58,3 +58,6 @@ python sudoku_gui.py -s [your scale factor]
 
 # running image_prep_function you can get output of image processing steps 
 <img src="/screenshots/screenshot_4.png" width="600" />
+<img src="/screenshots/screenshot_5.png" width="600" />
+
+
