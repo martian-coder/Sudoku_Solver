@@ -39,7 +39,7 @@ class Image_Predection(Sudoku_Solver):
         self.model = tf.keras.models.load_model('digit_trained.h5')
         self.blank_indices = list()
 
-        self.predictions()
+
 
     def resize(self):
 
@@ -112,8 +112,8 @@ class Image_Predection(Sudoku_Solver):
 
         # print(vertical_lines)
         # print(horizontal_lines)
-        filter(vertical_lines, 20)
-        filter(horizontal_lines, 20)
+        self.filter(vertical_lines, 20)
+        self.filter(horizontal_lines, 20)
 
         for line in vertical_lines:
             cv2.line(self.output, (line[0], line[1]), (line[2], line[3]), 255, 1)
@@ -161,6 +161,7 @@ class Image_Predection(Sudoku_Solver):
                 self.sudoku_squares.append(cube)
                 self.intersections.append((x1, y2))
         # cv2.imshow('out', output)
+        self.predictions()
 
         return 0
 
@@ -227,6 +228,8 @@ def main():
 
     if status == 1:
         print("image could not be segmented successfully")
+
+
 
     pred_obj.Solve_Sudoku()
     print(pred_obj.sudoku)
