@@ -231,9 +231,9 @@ def main():
     input, img = resize(img)
     sudoku_squares, intersections, bin_img, edges, output = preprocessing(input, ret=True)
 
-    # cv2.imshow("output", output)
-    # cv2.imshow("bin_image", bin_img)
-    # cv2.imshow("edges", edges)
+    cv2.imshow("output", output)
+    cv2.imshow("bin_image", bin_img)
+    cv2.imshow("edges", edges)
     #
     # cv2.waitKey(0)
 
