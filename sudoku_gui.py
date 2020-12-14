@@ -1414,7 +1414,7 @@ class Ui_Sudoku_Solver(Image_Predection):
 
         # super().Solve_Sudoku()
         # print("solved")
-        # print(self.sudoku)
+        print(self.sudoku)
         self.solve_button.setEnabled(True)
         self.update_ui_cells()
         self.status_label.setText("Done! Check for Errors")
@@ -1475,7 +1475,7 @@ class Ui_Sudoku_Solver(Image_Predection):
         self.cell_4_8.setValue(self.sudoku[4][8])
 
         self.cell_5_0.setValue(self.sudoku[5][0])
-        self.cell_5_1.setValue(self.sudoku[5][2])
+        self.cell_5_1.setValue(self.sudoku[5][1])
         self.cell_5_2.setValue(self.sudoku[5][2])
         self.cell_5_3.setValue(self.sudoku[5][3])
         self.cell_5_4.setValue(self.sudoku[5][4])

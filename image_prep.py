@@ -30,7 +30,8 @@ class Image_Predection(Sudoku_Solver):
         # blur = cv2.medianBlur(gray, 5)
         adapt_type = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
         thresh_type = cv2.THRESH_BINARY_INV
-        self.bin_img = cv2.adaptiveThreshold(self.gray, 255, adapt_type, thresh_type, 11, 2)
+        _, self.bin_img = cv2.threshold(self.gray, 100, 255, thresh_type)
+        # self.bin_img = cv2.adaptiveThreshold(self.gray, 255, adapt_type, thresh_type, 11, 2)
         self.edges = cv2.Canny(self.gray, 50, 50, apertureSize=3)
 
         self.sudoku_squares = list()
@@ -62,13 +63,29 @@ class Image_Predection(Sudoku_Solver):
         # print(img.shape)
         self.input[0:new_height, 0:new_width] = self.image
 
-    def filter(self, array, thresh, l=None):
+    def filter(self, array, thresh, type, l=None):
         if l == None:
             l = len(array)
+
+        if type == "vertical":
+            index = 0
+        else:
+            index = 1
+
         i = 0
         while (i + 1 != l):
-            if (array[i + 1][-1] - array[i][-1]) < thresh:
+            if array[i][-1] < 0:
                 del array[i]
+                i -= 1
+                l -= 1
+
+            elif (abs(array[i+1][-1] - array[i][-1]) < thresh):
+                if array[i][index] > 400:
+                    del array[i + 1]
+
+                else:
+                    del array[i]
+
                 i -= 1
                 l -= 1
             i += 1
@@ -77,7 +94,7 @@ class Image_Predection(Sudoku_Solver):
 
 
 
-        rho, theta, thresh = 2, np.pi / 180, 400
+        rho, theta, thresh = 2, np.pi / 180, 375
         lines = cv2.HoughLines(self.edges, rho, theta, thresh)
 
         vertical_lines = list()
@@ -112,8 +129,8 @@ class Image_Predection(Sudoku_Solver):
 
         # print(vertical_lines)
         # print(horizontal_lines)
-        self.filter(vertical_lines, 20)
-        self.filter(horizontal_lines, 20)
+        self.filter(vertical_lines, 20, "vertical")
+        self.filter(horizontal_lines, 20, "horizontal")
 
         for line in vertical_lines:
             cv2.line(self.output, (line[0], line[1]), (line[2], line[3]), 255, 1)
@@ -123,7 +140,7 @@ class Image_Predection(Sudoku_Solver):
         for line in horizontal_lines:
             cv2.line(self.output, (line[0], line[1]), (line[2], line[3]), 255, 1)
 
-        sudoku_squares = list()
+
         if (len(horizontal_lines) == 10) and (len(vertical_lines) == 10):
             print("success")
 
@@ -165,8 +182,8 @@ class Image_Predection(Sudoku_Solver):
 
         return 0
 
-    def nn_prediction(self, input):
-        nn_input = input / 255.0
+    def nn_prediction(self, input_img):
+        nn_input = input_img / 255.0
         nn_input = np.expand_dims(nn_input, axis=0)
         nn_input = np.expand_dims(nn_input, axis=-1)
 
@@ -185,12 +202,12 @@ class Image_Predection(Sudoku_Solver):
 
             whites = 0
 
-            for row_index in range(4, 14):
+            for row_index in range(4, 24):
                 for col_index in range(4, 24):
                     if cube[row_index][col_index] > 127:
                         whites += 1
 
-            if whites <= 10:
+            if whites <= 5:
                 self.sudoku[index] = 0
                 self.blank_indices.append(index)
             else:

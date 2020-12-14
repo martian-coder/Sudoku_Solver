@@ -33,13 +33,32 @@ def resize(img):
     input[0:new_height, 0:new_width] = img
     return input, img
 
-def filter(array, thresh, l=None):
+def filter(array, thresh, type, l=None):
+
+    if type == "vertical":
+        index = 0
+    else:
+        index = 1
+
+
     if l == None:
         l = len(array)
     i = 0
     while(i+1 != l):
-        if (array[i+1][-1] - array[i][-1]) < thresh:
+
+        if array[i][-1] < 0:
             del array[i]
+            i -= 1
+            l -= 1
+
+        elif (abs(array[i+1][-1] - array[i][-1]) < thresh):
+
+            if array[i][index] > 400:
+                del array[i+1]
+
+            else:
+                del array[i]
+
             i -= 1
             l -= 1
         i += 1
@@ -52,17 +71,21 @@ def preprocessing(input, ret = False):
     # blur = cv2.medianBlur(gray, 5)
     adapt_type = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
     thresh_type = cv2.THRESH_BINARY_INV
-    bin_img = cv2.adaptiveThreshold(gray, 255, adapt_type, thresh_type, 11, 2)
+    _, bin_img = cv2.threshold(gray, 100, 255, thresh_type)
+
+    # bin_img = cv2.adaptiveThreshold(gray, 255, thresh_type, thresh_type, 5, 2)
     edges = cv2.Canny(gray, 50, 50, apertureSize=3)
+    # edges = cv2.adaptiveThreshold(edges, 255, adapt_type, cv2.THRESH_BINARY, 11, 2)
 
     # cv2.imshow("bin_img", bin_img)
-    # cv2.imshow("input", input)
+    # bin_img = cv2.bitwise_not(gray)
+    cv2.imshow("inpufaft", gray)
 
     # cv2.imshow("img_1", img_1)
 
 
 
-    rho, theta, thresh = 2, np.pi / 180, 400
+    rho, theta, thresh = 2, np.pi / 180, 375
     lines = cv2.HoughLines(edges, rho, theta, thresh)
 
     vertical_lines = list()
@@ -84,7 +107,7 @@ def preprocessing(input, ret = False):
             # print(rho / a, rho/b)
             # print(rho / a)
 
-            if a > b:
+            if abs(a) > abs(b):
                 vertical_lines.append([x1, y1, x2, y2, rho / a])
                 # horizontal_distaces.append(rho/a)
                 # print(rho / a)
@@ -95,18 +118,38 @@ def preprocessing(input, ret = False):
     vertical_lines.sort(key=lambda x: x[-1])
     horizontal_lines.sort(key=lambda x: x[-1])
 
-    # print(vertical_lines)
-    # print(horizontal_lines)
-    filter(vertical_lines, 20)
-    filter(horizontal_lines, 20)
+    print(vertical_lines)
+    print(horizontal_lines)
+
+    print(len(vertical_lines))
+    print(len(horizontal_lines))
+
+
+    # for line in vertical_lines:
+    #     output = cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
+    #
+    #
+    # for line in horizontal_lines:
+    #     output = cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
+
+    filter(vertical_lines, 25, "vertical")
+    filter(horizontal_lines, 25, "horizontal")
+
+    print(vertical_lines)
+    print(horizontal_lines)
+
+    print(len(vertical_lines))
+    print(len(horizontal_lines))
+
+    print(output.shape)
+
 
     for line in vertical_lines:
-        cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
+        output = cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
 
-    # cv2.line(output_2, (line[0], line[1]), (line[2], line[3]), 255, 1)
 
     for line in horizontal_lines:
-        cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
+        output = cv2.line(output, (line[0], line[1]), (line[2], line[3]), 255, 1)
 
 
 
@@ -116,9 +159,9 @@ def preprocessing(input, ret = False):
 
     else:
         print("un-successiful filtering")
-        cv2.imshow("bin_img", edges)
+        cv2.imshow("edges", edges)
         cv2.imshow("input", gray)
-        # cv2.imshow("img_1", img_1)
+        cv2.imshow("output", output)
         cv2.waitKey(0)
         exit()
 
@@ -128,7 +171,7 @@ def preprocessing(input, ret = False):
         for ver_line in range(10):
             x1 = int(vertical_lines[ver_line][-1])
             y1 = int(horizontal_lines[hor_line][-1])
-            # output = cv2.circle(output, (x1, y1), radius=4, color=(0, 0, 255), thickness=-1)
+            output = cv2.circle(output, (x1, y1), radius=4, color=(0, 0, 255), thickness=-1)
             # intersections
 
             if (hor_line == 9) or (ver_line == 9):
@@ -179,12 +222,12 @@ def predictions(array, sudoku):
 
         whites = 0
 
-        for row_index in range(4, 14):
+        for row_index in range(4, 24):
             for col_index in range(4, 24):
                 if cube[row_index][col_index] > 127:
                     whites += 1
 
-        if whites <= 10:
+        if whites <= 5:
             sudoku[index] = 0
             blank_indices.append(index)
         else:
@@ -220,16 +263,16 @@ def main():
     files = os.listdir(path)
 
     print(files)
-    file_number = 1
+    file_number = 5
     img_path = os.path.join(path, files[file_number-1])
     img = cv2.imread(img_path)
     print(img_path)
 
-    # input = resizing(img)
+    # input_img = resizing(img)
 
-    # output = input.copy()
-    input, img = resize(img)
-    sudoku_squares, intersections, bin_img, edges, output = preprocessing(input, ret=True)
+    # output = input_img.copy()
+    input_img, img = resize(img)
+    sudoku_squares, intersections, bin_img, edges, output = preprocessing(input_img, ret=True)
 
     cv2.imshow("output", output)
     cv2.imshow("bin_image", bin_img)
@@ -249,11 +292,11 @@ def main():
             cv2.imwrite(image_name, cubes)
         exit()
 
-    # sudoku_squares, intersections = preprocessing(input)
+    # sudoku_squares, intersections = preprocessing(input_img)
     # cv2.imshow("bin_img", bin_img)
-    # cv2.imshow("input", edges)
+    # cv2.imshow("input_img", edges)
     cv2.imshow("Sudoku", img)
-    # cv2.imshow("input", input)
+    # cv2.imshow("input_img", input_img)
 
     # intersections = intersections.reshape(9, 9)
     sudoku = np.ones(81, dtype=np.int)
@@ -266,6 +309,7 @@ def main():
     print("Sudoku to Solve :")
     sudoku_obj.print()
     print("Number of Unknowns : {}".format(sudoku_obj.unknowns))
+    input("Press enter to solve")
     sudoku_obj.solve()
     print("Solved Sudoku :")
     sudoku_obj.print()
