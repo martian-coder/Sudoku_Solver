@@ -48,6 +48,5 @@ Change the default value in the sudoku_gui.py script or run the program as
 ```
 python sudoku_gui.py -s [your scale factor]
 ```
-
 <br>
-![ScreenShot](screenshots/screenshot_1.png)
+![ScreenShot](/screenshots/screenshot_1.png)
