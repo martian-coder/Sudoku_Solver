@@ -50,4 +50,4 @@ python sudoku_gui.py -s [your scale factor]
 ```
 
 <br>
-![ScreenShot](/screenshots/screenshort_1.png)
+![ScreenShot](screenshots/screenshort_1.png)
